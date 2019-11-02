@@ -22,14 +22,14 @@ To push an ECI to a registry, you need the following items in a directory:
 You can push the image as follows:
 
 ```sh
-eci push --root path/to/root.img:raw --kernel path/to/kernel --initrd path/to/initrd --disks path/to/disk1:iso --disks path/to/disk2:vmdk ... --config path/to/config lfedge/eci-nginx:ubuntu-1804-11715
+eci push --root path/to/root.img:raw --kernel path/to/kernel --initrd path/to/initrd --disk path/to/disk1:iso --disk path/to/disk2:vmdk ... --config path/to/config lfedge/eci-nginx:ubuntu-1804-11715
 ```
 
 The above assumes that the registry fully supports Artifacts and will use specialized mime types. If you wish to use an existing regstry that does
 not yet support artifacts, pass the `--legacy` flag:
 
 ```sh
-eci push --legacy --root path/to/root.img:raw --kernel path/to/kernel --initrd path/to/initrd --disks path/to/disk1:iso --disks path/to/disk2:vmdk ... --config path/to/config lfedge/eci-nginx:ubuntu-1804-11715
+eci push --legacy --root path/to/root.img:raw --kernel path/to/kernel --initrd path/to/initrd --disk path/to/disk1:iso --disk path/to/disk2:vmdk ... --config path/to/config lfedge/eci-nginx:ubuntu-1804-11715
 ```
 
 The `eci` command will take care of setting the correct mime types and annotations on all of the objects.
@@ -74,6 +74,6 @@ The annotations are as follows:
 * `org.lfedge.eci.role: <role>` - for the role of this particular layer. Can be one of the following:
    * `kernel`
    * `initrd`
-   * `root`
-   * `disk` - for alternate non-root/boot disks
+   * `disk-root`
+   * `disk-additional` - for alternate non-root/boot disks
 
