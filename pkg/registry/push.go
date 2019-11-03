@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"path"
 	"sync"
 
 	auth "github.com/deislabs/oras/pkg/auth/docker"
@@ -21,7 +22,7 @@ func Push(image string, artifact *Artifact, verbose bool, writer io.Writer) (str
 		customMediaType string
 		role            string
 		name            string
-		path            string
+		filepath        string
 		err             error
 		pushOpts        []oras.PushOpt
 	)
@@ -43,11 +44,11 @@ func Push(image string, artifact *Artifact, verbose bool, writer io.Writer) (str
 		role = RoleKernel
 		name = "kernel"
 		customMediaType = MimeTypeECIKernel
-		path = artifact.Kernel
+		filepath = artifact.Kernel
 		mediaType = GetLayerMediaType(customMediaType, artifact.Legacy)
-		desc, err = fileStore.Add(name, mediaType, path)
+		desc, err = fileStore.Add(name, mediaType, filepath)
 		if err != nil {
-			return "", fmt.Errorf("error adding %s at %s: %v", name, path, err)
+			return "", fmt.Errorf("error adding %s at %s: %v", name, filepath, err)
 		}
 		desc.Annotations[AnnotationMediaType] = customMediaType
 		desc.Annotations[AnnotationRole] = role
@@ -59,11 +60,11 @@ func Push(image string, artifact *Artifact, verbose bool, writer io.Writer) (str
 		role = RoleInitrd
 		name = "initrd"
 		customMediaType = MimeTypeECIInitrd
-		path = artifact.Initrd
+		filepath = artifact.Initrd
 		mediaType = GetLayerMediaType(customMediaType, artifact.Legacy)
-		desc, err = fileStore.Add(name, mediaType, path)
+		desc, err = fileStore.Add(name, mediaType, filepath)
 		if err != nil {
-			return "", fmt.Errorf("error adding %s at %s: %v", name, path, err)
+			return "", fmt.Errorf("error adding %s at %s: %v", name, filepath, err)
 		}
 		desc.Annotations[AnnotationMediaType] = customMediaType
 		desc.Annotations[AnnotationRole] = role
@@ -72,14 +73,14 @@ func Push(image string, artifact *Artifact, verbose bool, writer io.Writer) (str
 	}
 
 	if disk := artifact.Root; disk != nil {
-		name := "root"
 		role = RoleRootDisk
 		customMediaType = TypeToMime[disk.Type]
-		path = disk.Path
+		filepath = disk.Path
+		name := path.Base(filepath)
 		mediaType = GetLayerMediaType(customMediaType, artifact.Legacy)
-		desc, err = fileStore.Add(name, mediaType, path)
+		desc, err = fileStore.Add(name, mediaType, filepath)
 		if err != nil {
-			return "", fmt.Errorf("error adding %s disk at %s: %v", name, path, err)
+			return "", fmt.Errorf("error adding %s disk at %s: %v", name, filepath, err)
 		}
 		desc.Annotations[AnnotationMediaType] = customMediaType
 		desc.Annotations[AnnotationRole] = role
@@ -88,14 +89,14 @@ func Push(image string, artifact *Artifact, verbose bool, writer io.Writer) (str
 	}
 	for i, disk := range artifact.Disks {
 		if disk != nil {
-			name := fmt.Sprintf("disk-%d", i)
+			name := fmt.Sprintf("disk-%d-%s", i, path.Base(filepath)
 			role = RoleAdditionalDisk
 			customMediaType = TypeToMime[disk.Type]
-			path = disk.Path
+			filepath = disk.Path
 			mediaType = GetLayerMediaType(customMediaType, artifact.Legacy)
-			desc, err = fileStore.Add(name, mediaType, path)
+			desc, err = fileStore.Add(name, mediaType, filepath)
 			if err != nil {
-				return "", fmt.Errorf("error adding %s disk at %s: %v", name, path, err)
+				return "", fmt.Errorf("error adding %s disk at %s: %v", name, filepath, err)
 			}
 			desc.Annotations[AnnotationMediaType] = customMediaType
 			desc.Annotations[AnnotationRole] = role
