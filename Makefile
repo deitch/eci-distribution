@@ -67,7 +67,7 @@ ifndef PKG_LIST
 	$(eval PKG_LIST := $(shell $(BUILD_CMD) go list ./... | grep -v vendor))
 endif
 
-.PHONY: fmt-check lint test vet golint tag version
+.PHONY: fmt fmt-check lint test vet golint tag version
 
 $(DIST_DIR):
 	mkdir -p $@
@@ -87,6 +87,10 @@ fmt-check:
 	  $(BUILD_CMD) gofmt -s -e -d ${GO_FILES}; \
 	  exit 1; \
 	fi
+
+## format files
+fmt:
+	gofmt -w -s $(GO_FILES)
 
 golangci-lint: $(LINTER)
 $(LINTER):

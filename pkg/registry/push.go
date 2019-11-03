@@ -6,23 +6,15 @@ import (
 	"io"
 	"sync"
 
+	auth "github.com/deislabs/oras/pkg/auth/docker"
 	"github.com/deislabs/oras/pkg/content"
 	"github.com/deislabs/oras/pkg/oras"
 
 	"github.com/containerd/containerd/images"
-	"github.com/containerd/containerd/remotes/docker"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
 func Push(image string, artifact *Artifact, verbose bool, writer io.Writer) (string, error) {
-	ctx := context.Background()
-	resolver := docker.NewResolver(docker.ResolverOptions{})
-
-	// Go through each file type in the registry and add the appropriate file type and path, along with annotations
-	fileStore := content.NewFileStore("")
-	defer fileStore.Close()
-
-	pushContents := []ocispec.Descriptor{}
 	var (
 		desc            ocispec.Descriptor
 		mediaType       string
@@ -33,6 +25,19 @@ func Push(image string, artifact *Artifact, verbose bool, writer io.Writer) (str
 		err             error
 		pushOpts        []oras.PushOpt
 	)
+
+	ctx := context.Background()
+	cli, err := auth.NewClient()
+	if err != nil {
+		return "", fmt.Errorf("unable to get authenticating client to registry")
+	}
+	resolver, err := cli.Resolver(ctx)
+
+	// Go through each file type in the registry and add the appropriate file type and path, along with annotations
+	fileStore := content.NewFileStore("")
+	defer fileStore.Close()
+
+	pushContents := []ocispec.Descriptor{}
 
 	if artifact.Kernel != "" {
 		role = RoleKernel

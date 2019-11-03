@@ -6,18 +6,22 @@ import (
 	"io"
 	"sync"
 
+	auth "github.com/deislabs/oras/pkg/auth/docker"
 	"github.com/deislabs/oras/pkg/content"
 	"github.com/deislabs/oras/pkg/oras"
 
 	"github.com/containerd/containerd/images"
-	"github.com/containerd/containerd/remotes/docker"
 	digest "github.com/opencontainers/go-digest"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
 func Pull(image, dir string, verbose bool, writer io.Writer) (*ocispec.Descriptor, error) {
 	ctx := context.Background()
-	resolver := docker.NewResolver(docker.ResolverOptions{})
+	cli, err := auth.NewClient()
+	if err != nil {
+		return nil, fmt.Errorf("unable to get authenticating client to registry")
+	}
+	resolver, err := cli.Resolver(ctx)
 	pullOpts := []oras.PullOpt{}
 
 	fileStore := content.NewFileStore(dir)
