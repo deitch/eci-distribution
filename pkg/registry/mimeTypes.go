@@ -2,8 +2,8 @@ package registry
 
 const (
 	MimeTypeECIConfig      = "application/vnd.lfedge.eci.config.v1+json"
-	MimeTypeECIKernel      = "application/vnd.lfedge.eci.kernel.layer.v1.tar"
-	MimeTypeECIInitrd      = "application/vnd.lfedge.eci.initrd.layer.v1.tar"
+	MimeTypeECIKernel      = "application/vnd.lfedge.eci.kernel.layer.v1+kernel"
+	MimeTypeECIInitrd      = "application/vnd.lfedge.eci.initrd.layer.v1+cpio"
 	MimeTypeECIDiskRaw     = "application/vnd.lfedge.disk.layer.v1+raw"
 	MimeTypeECIDiskVhd     = "application/vnd.lfedge.disk.layer.v1+vhd"
 	MimeTypeECIDiskVmdk    = "application/vnd.lfedge.disk.layer.v1+vmdk"
