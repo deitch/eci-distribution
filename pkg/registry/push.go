@@ -76,7 +76,7 @@ func Push(image string, artifact *Artifact, verbose bool, writer io.Writer) (str
 		role = RoleRootDisk
 		customMediaType = TypeToMime[disk.Type]
 		filepath = disk.Path
-		name := path.Base(filepath)
+		name := fmt.Sprintf("disk-root-%s", path.Base(filepath))
 		mediaType = GetLayerMediaType(customMediaType, artifact.Legacy)
 		desc, err = fileStore.Add(name, mediaType, filepath)
 		if err != nil {
