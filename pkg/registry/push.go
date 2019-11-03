@@ -89,7 +89,7 @@ func Push(image string, artifact *Artifact, verbose bool, writer io.Writer) (str
 	}
 	for i, disk := range artifact.Disks {
 		if disk != nil {
-			name := fmt.Sprintf("disk-%d-%s", i, path.Base(filepath)
+			name := fmt.Sprintf("disk-%d-%s", i, path.Base(filepath))
 			role = RoleAdditionalDisk
 			customMediaType = TypeToMime[disk.Type]
 			filepath = disk.Path

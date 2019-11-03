@@ -123,7 +123,7 @@ race: pkgs
 help: 
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: build build-all image push deploy ci cd dep manifest-tool
+.PHONY: build build-all image push deploy ci cd dep manifest-tool clean
 
 ## Build the binaries for all supported ARCH
 build-all: $(addprefix sub-build-, $(ARCHES))
@@ -141,6 +141,9 @@ ifneq (,$(DESTDIR))
 	mkdir -p $(DESTDIR)
 	cp $(DIST_BINARY) $(DESTDIR)/$(shell basename $(DIST_BINARY))
 endif
+
+clean:
+	rm -rf $(DIST_DIR)
 
 
 ###############################################################################
