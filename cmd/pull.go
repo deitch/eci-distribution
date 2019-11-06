@@ -29,7 +29,7 @@ var pullCmd = &cobra.Command{
 		image := args[0]
 		desc, err := registry.Pull(image, pullDir, verbose, os.Stdout)
 		if err != nil {
-			log.Fatalf("error pushing to registry: %v", err)
+			log.Fatalf("error pulling from registry: %v", err)
 		}
 		fmt.Printf("Pulled image %s with digest %s to directory %s\n", image, string(desc.Digest), pullDir)
 
