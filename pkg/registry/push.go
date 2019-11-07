@@ -109,6 +109,20 @@ func Push(image string, artifact *Artifact, verbose bool, writer io.Writer) (str
 		pushOpts = append(pushOpts, oras.WithPushBaseHandler(pushStatusTrack(writer)))
 	}
 
+	// was a config specified?
+	if artifact.Config != "" {
+		name = "config.json"
+		customMediaType = MimeTypeECIConfig
+		filepath = artifact.Config
+		mediaType = GetConfigMediaType(customMediaType, artifact.Legacy)
+		desc, err = fileStore.Add(name, mediaType, filepath)
+		if err != nil {
+			return "", fmt.Errorf("error adding %s config at %s: %v", name, filepath, err)
+		}
+		desc.Annotations[AnnotationMediaType] = customMediaType
+		pushOpts = append(pushOpts, oras.WithConfig(desc))
+	}
+
 	// push the data
 	desc, err = oras.Push(ctx, resolver, image, fileStore, pushContents, pushOpts...)
 	if err != nil {

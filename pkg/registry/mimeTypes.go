@@ -46,3 +46,9 @@ func GetLayerMediaType(actualType string, legacy bool) string {
 	}
 	return actualType
 }
+func GetConfigMediaType(actualType string, legacy bool) string {
+	if legacy {
+		return MimeTypeOCIImageConfig
+	}
+	return actualType
+}
